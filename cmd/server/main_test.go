@@ -56,6 +56,12 @@ func TestSignInHandler(t *testing.T) {
 		if res2.StatusCode != http.StatusOK {
 			t.Errorf("expected status code to be 200 got %d", res2.StatusCode)
 		}
+
+		jws := dto.Jws{}
+		json.NewDecoder(res2.Body).Decode(&jws)
+		if jws.Token == "" {
+			t.Errorf("expected token not to be empty got %s", jws.Token)
+		}
 	})
 
 	t.Run("Test sign in with wrong signature ", func(t *testing.T) {
@@ -71,7 +77,7 @@ func TestSignInHandler(t *testing.T) {
 		if err != nil {
 			t.Errorf("expected error to be nil got %v", err)
 		}
-		req2 := httptest.NewRequest(http.MethodPost, "/sigIn", bytes.NewBuffer(challengeResponseJson))
+		req2 := httptest.NewRequest(http.MethodPost, "/signIn", bytes.NewBuffer(challengeResponseJson))
 		w2 := httptest.NewRecorder()
 		signIn(w2, req2)
 		res2 := w2.Result()

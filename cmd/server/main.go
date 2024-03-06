@@ -14,6 +14,7 @@ import (
 	"os"
 
 	"github.com/martinsaporiti/ed25519-poc/internal/dto"
+	"github.com/martinsaporiti/ed25519-poc/internal/jws"
 )
 
 func main() {
@@ -80,8 +81,26 @@ func signIn(w http.ResponseWriter, r *http.Request) {
 		}
 
 		fmt.Println("signature verifies")
+		token, err := jws.Generate()
+		if err != nil {
+			w.WriteHeader(http.StatusInternalServerError)
+			w.Write([]byte("error generating token"))
+			return
+		}
+
+		jws := &dto.Jws{
+			Token: token,
+		}
+
+		res, err := json.Marshal(jws)
+		if err != nil {
+			w.WriteHeader(http.StatusInternalServerError)
+			w.Write([]byte("error marshalling token"))
+			return
+
+		}
 		w.WriteHeader(http.StatusOK)
-		w.Write([]byte("signature verifies"))
+		w.Write(res)
 
 	} else {
 		w.WriteHeader(http.StatusMethodNotAllowed)
