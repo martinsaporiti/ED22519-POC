@@ -49,7 +49,7 @@ func TestSignInHandler(t *testing.T) {
 		if err != nil {
 			t.Errorf("expected error to be nil got %v", err)
 		}
-		req2 := httptest.NewRequest(http.MethodPost, "/sigIn", bytes.NewBuffer(challengeResponseJson))
+		req2 := httptest.NewRequest(http.MethodPost, "/signIn", bytes.NewBuffer(challengeResponseJson))
 		w2 := httptest.NewRecorder()
 		signIn(w2, req2)
 		res2 := w2.Result()
