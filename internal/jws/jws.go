@@ -7,7 +7,6 @@ import (
 	"crypto/rsa"
 	"crypto/sha256"
 	"encoding/base64"
-	b64 "encoding/base64"
 	"encoding/json"
 	"errors"
 	"fmt"
@@ -19,7 +18,7 @@ import (
 // permissions being requested (scopes), the target of the token, the issuer,
 // the time the token was issued, and the lifetime of the token.
 type ClaimSet struct {
-	Iss   string `json:"iss"`             // email address of the client_id of the application making the access token request
+	Iss   string `json:"iss"`             // public key.
 	Scope string `json:"scope,omitempty"` // space-delimited list of the permissions the application requests
 	Aud   string `json:"aud"`             // descriptor of the intended target of the assertion (Optional).
 	Exp   int64  `json:"exp"`             // the expiration time of the assertion (seconds since Unix epoch)
@@ -185,7 +184,7 @@ func Generate() (string, error) {
 		return "", err
 	}
 
-	pkEncoded := b64.StdEncoding.EncodeToString(publicKeyBytes)
+	pkEncoded := base64.StdEncoding.EncodeToString(publicKeyBytes)
 
 	payload := &ClaimSet{
 		Iss: pkEncoded,
@@ -210,7 +209,7 @@ func Validate(token string) error {
 		return err
 	}
 
-	pkDecoed, err := b64.StdEncoding.DecodeString(claims.Iss)
+	pkDecoed, err := base64.StdEncoding.DecodeString(claims.Iss)
 	if err != nil {
 		fmt.Println(err)
 		return err
