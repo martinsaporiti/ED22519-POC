@@ -11,6 +11,7 @@ import (
 	"testing"
 
 	"github.com/martinsaporiti/ed25519-poc/internal/dto"
+	"github.com/martinsaporiti/ed25519-poc/internal/jws"
 )
 
 func TestSignInHandler(t *testing.T) {
@@ -57,11 +58,16 @@ func TestSignInHandler(t *testing.T) {
 			t.Errorf("expected status code to be 200 got %d", res2.StatusCode)
 		}
 
-		jws := dto.Jws{}
-		json.NewDecoder(res2.Body).Decode(&jws)
-		if jws.Token == "" {
-			t.Errorf("expected token not to be empty got %s", jws.Token)
+		jwsPayload := dto.Jws{}
+		json.NewDecoder(res2.Body).Decode(&jwsPayload)
+		if jwsPayload.Token == "" {
+			t.Errorf("expected token not to be empty got %s", jwsPayload.Token)
 		}
+		err = jws.Validate(jwsPayload.Token)
+		if err != nil {
+			t.Errorf("expected error to be nil got %v", err)
+		}
+
 	})
 
 	t.Run("Test sign in with wrong signature ", func(t *testing.T) {
