@@ -15,7 +15,7 @@ import (
 )
 
 func TestSignInHandler(t *testing.T) {
-	req := httptest.NewRequest(http.MethodGet, "/sigIn", nil)
+	req := httptest.NewRequest(http.MethodGet, "/signIn", nil)
 	w := httptest.NewRecorder()
 	signIn(w, req)
 	res := w.Result()
